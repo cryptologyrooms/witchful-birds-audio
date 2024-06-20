@@ -39,6 +39,8 @@ const roomSlug = process.env.ROOM_SLUG;
 const roomScreenName = process.env.ROOM_SCREEN_NAME;
 const defaultVolume = process.env.DEFAULT_VOLUME;
 const motorPin = process.env.MOTOR_PIN;
+const birdsAudioPath = process.env.BIRDS_AUDIO_URL
+const birdsEvent = process.env.BIRDS_EVENT
 
 console.log('Room Slug: ' + roomSlug);
 console.log('Room ScreenName: ' + roomScreenName);
@@ -166,6 +168,7 @@ const mqttTopics = {
     let payload = data.length ? JSON.parse(data) : null;
     console.log('game-state', payload);
     currentData.gameState = payload;
+    gameStateChanged();
   },
 
   'tempus/room/+roomSlug/clue' (data, packet, topic) {
@@ -269,6 +272,32 @@ currentData.currentTimeInterval = setInterval(() => {
   currentData.currentTime = moment();
 }, 100);
 
+function gameStateChanged() {
+  if (currentData.gameState == null) {
+    stopAudio();
+
+    return;
+  }
+
+  switch (currentData.gameState.state) {
+      case 'R':
+        stopAudio();
+        break;
+      case 'SS':
+        stopAudio();
+        break;
+      case 'S':
+        stopAudio();
+        break;
+      case 'E':
+        break;
+      case 'F':
+        break;
+      default:
+        break;
+    }
+}
+
 function clueReceived(clue) {
   log('clueReceived(clue)', clue);
 }
@@ -276,6 +305,8 @@ function clueReceived(clue) {
 function eventReceived(event) {
   log('eventReceived(event)', event);
   switch (event.event) {
+    case birdsEvent:
+      playAudioLoop(birdsAudioPath);
     default:
       break;
   }
@@ -288,6 +319,8 @@ function recoverStateFromGame() {
 
   eventGameTimelines.forEach(gameTimeline => {
     switch (gameTimeline.game_event.event) {
+      case birdsEvent:
+        playAudioLoop(birdsAudioPath);
       default:
         break;
     }
@@ -355,6 +388,30 @@ function sendEvent(eventCode, options = {}) {
   mqttClient.publish('tempus/room/' + this.room.slug + '/event', JSON.stringify(eventPayload));
 }
 
+function playAudioLoop(audioPath) {
+  console.log('playAudio(audioPath)');
+  try {
+    audio.kill();
+  } catch (error) {
+    //
+  }
+
+  let volume =  defaultVolume;
+  log('Playing (looped) : ' + audioPath + ' at volume: ' + volume);
+
+  audio = player.play(
+    audioPath,
+    { mpg123: ['-g', volume, '-l', 0] },
+    function(err) {
+      log('Playing ended: ' + audioPath);
+      if (err) {
+        log("Play Error:", err);
+      } else {
+      }
+    }
+  );
+}
+
 function playAudio(clue) {
   console.log('playAudio(clue)');
   try {
@@ -378,6 +435,15 @@ function playAudio(clue) {
       }
     }
   );
+}
+
+function stopAudio() {
+  console.log('stopAudio())');
+  try {
+    audio.kill();
+  } catch (error) {
+    //
+  }
 }
 
 function log(...args) {
