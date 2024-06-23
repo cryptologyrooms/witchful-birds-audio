@@ -39,12 +39,21 @@ const roomSlug = process.env.ROOM_SLUG;
 const roomScreenName = process.env.ROOM_SCREEN_NAME;
 const defaultVolume = process.env.DEFAULT_VOLUME;
 const motorPin = process.env.MOTOR_PIN;
-const birdsAudioPath = process.env.BIRDS_AUDIO_URL
-const birdsEvent = process.env.BIRDS_EVENT
+
+const birdsAudioPath = process.env.BIRDS_AUDIO_URL;
+const birdsAudioAlternatePath = process.env.BIRDS_AUDIO_ALTERNATE_URL;
+const birdsEvent = process.env.BIRDS_EVENT;
+const birdsAlternateEvent = process.env.BIRDS_ALTERNATE_EVENT;
+const birdsStopEvent = process.env.BIRDS_STOP_EVENT;
 
 console.log('Room Slug: ' + roomSlug);
 console.log('Room ScreenName: ' + roomScreenName);
 console.log('Default volume: ' + defaultVolume);
+console.log('birdsAudioPath: ' + birdsAudioPath);
+console.log('birdsAudioAlternatePath: ' + birdsAudioAlternatePath);
+console.log('birdsEvent: ' + birdsEvent);
+console.log('birdsAlternateEvent: ' + birdsAlternateEvent);
+console.log('birdsStopEvent: ' + birdsStopEvent);
 
 let defaultData = {
   room: null,
@@ -60,6 +69,8 @@ let defaultData = {
   failTime: null,
   clueTimeout: null,
   clueHtml: null,
+  audioPath: null,
+  playAudio: false,
 };
 
 let currentData = JSON.parse(JSON.stringify(defaultData));
@@ -275,6 +286,7 @@ currentData.currentTimeInterval = setInterval(() => {
 function gameStateChanged() {
   if (currentData.gameState == null) {
     stopAudio();
+    currentData.audioPath = birdsAudioPath;
 
     return;
   }
@@ -282,16 +294,21 @@ function gameStateChanged() {
   switch (currentData.gameState.state) {
       case 'R':
         stopAudio();
+        currentData.audioPath = birdsAudioPath;
         break;
       case 'SS':
         stopAudio();
+        currentData.audioPath = birdsAudioPath;
         break;
       case 'S':
         stopAudio();
+        currentData.audioPath = birdsAudioPath;
         break;
       case 'E':
+        stopAudio();
         break;
       case 'F':
+        stopAudio();
         break;
       default:
         break;
@@ -306,7 +323,14 @@ function eventReceived(event) {
   log('eventReceived(event)', event);
   switch (event.event) {
     case birdsEvent:
-      playAudioLoop(birdsAudioPath);
+      currentData.audioPath = birdsAudioPath;
+      currentData.playAudio = true;
+      playAudioLoop();
+    case birdsAlternateEvent:
+      currentData.audioPath = birdsAudioAlternatePath;
+      currentData.playAudio = true;
+    case birdsStopEvent:
+      stopAudio();
     default:
       break;
   }
@@ -320,7 +344,15 @@ function recoverStateFromGame() {
   eventGameTimelines.forEach(gameTimeline => {
     switch (gameTimeline.game_event.event) {
       case birdsEvent:
-        playAudioLoop(birdsAudioPath);
+        currentData.audioPath = birdsAudioPath;
+        currentData.playAudio = true;
+        playAudioLoop();
+      case birdsAlternateEvent:
+        currentData.audioPath = birdsAudioAlternatePath;
+        currentData.playAudio = true;
+        playAudioLoop();
+      case birdsStopEvent:
+        stopAudio();
       default:
         break;
     }
@@ -388,8 +420,13 @@ function sendEvent(eventCode, options = {}) {
   mqttClient.publish('tempus/room/' + this.room.slug + '/event', JSON.stringify(eventPayload));
 }
 
-function playAudioLoop(audioPath) {
-  console.log('playAudio(audioPath)');
+function playAudioLoop() {
+  console.log('playAudio()');
+
+  if (currentData.playAudio == false) {
+    return;
+  }
+
   try {
     audio.kill();
   } catch (error) {
@@ -397,13 +434,14 @@ function playAudioLoop(audioPath) {
   }
 
   let volume =  defaultVolume;
-  log('Playing (looped) : ' + audioPath + ' at volume: ' + volume);
+  log('Playing (looped) : ' + currentData.audioPath + ' at volume: ' + volume);
 
   audio = player.play(
-    audioPath,
-    { mpg123: ['-g', volume, '-l', 0] },
+    currentData.audioPath,
+    { mpg123: ['-g', volume] },
     function(err) {
-      log('Playing ended: ' + audioPath);
+      log('Playing ended: ' + currentData.audioPath);
+      playAudioLoop()
       if (err) {
         log("Play Error:", err);
       } else {
@@ -439,6 +477,7 @@ function playAudio(clue) {
 
 function stopAudio() {
   console.log('stopAudio())');
+  currentData.playAudio = false;
   try {
     audio.kill();
   } catch (error) {

@@ -47,3 +47,10 @@ some way to remote restart the process
 some way to remote reload the data
 internally catch no network at startup and retry nicely
 
+# Logic
+
+Audio stops at all game state changes.
+
+On event `BIRDS_EVENT` the standard MP3 (`BIRDS_AUDIO_URL`) plays , repeating continuously.
+On event `BIRDS_ALTERNATE_EVENT` the alternative MP3 (`BIRDS_AUDIO_ALTERNATE_URL`) starts playing on next repartition, repeating continuously there after.
+On event `BIRDS_STOP_EVENT` all audio stops. 
