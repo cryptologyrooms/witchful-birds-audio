@@ -326,11 +326,14 @@ function eventReceived(event) {
       currentData.audioPath = birdsAudioPath;
       currentData.playAudio = true;
       playAudioLoop();
+      break;
     case birdsAlternateEvent:
       currentData.audioPath = birdsAudioAlternatePath;
       currentData.playAudio = true;
+      break;
     case birdsStopEvent:
       stopAudio();
+      break;
     default:
       break;
   }
@@ -347,12 +350,15 @@ function recoverStateFromGame() {
         currentData.audioPath = birdsAudioPath;
         currentData.playAudio = true;
         playAudioLoop();
+        break;
       case birdsAlternateEvent:
         currentData.audioPath = birdsAudioAlternatePath;
         currentData.playAudio = true;
         playAudioLoop();
+        break;
       case birdsStopEvent:
         stopAudio();
+        break;
       default:
         break;
     }
