@@ -51,6 +51,8 @@ internally catch no network at startup and retry nicely
 
 Audio stops at all game state changes.
 
-On event `BIRDS_EVENT` the standard MP3 (`BIRDS_AUDIO_URL`) plays , repeating continuously.
+On event `BIRDS_EVENT` the standard MP3 (`BIRDS_AUDIO_URL`) plays, repeating continuously.
 On event `BIRDS_ALTERNATE_EVENT` the alternative MP3 (`BIRDS_AUDIO_ALTERNATE_URL`) starts playing on next repartition, repeating continuously there after.
 On event `BIRDS_STOP_EVENT` all audio stops. 
+On event `BIRDS_PAUSE_EVENT` all audio stops. 
+On event `BIRDS_RESUME_EVENT` the last MP3 selected plays, repeating continuously. 

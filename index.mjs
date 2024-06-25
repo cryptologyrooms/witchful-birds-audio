@@ -45,6 +45,8 @@ const birdsAudioAlternatePath = process.env.BIRDS_AUDIO_ALTERNATE_URL;
 const birdsEvent = process.env.BIRDS_EVENT;
 const birdsAlternateEvent = process.env.BIRDS_ALTERNATE_EVENT;
 const birdsStopEvent = process.env.BIRDS_STOP_EVENT;
+const birdsPauseEvent = process.env.BIRDS_PAUSE_EVENT;
+const birdsResumeEvent = process.env.BIRDS_RESUME_EVENT;
 
 console.log('Room Slug: ' + roomSlug);
 console.log('Room ScreenName: ' + roomScreenName);
@@ -54,6 +56,9 @@ console.log('birdsAudioAlternatePath: ' + birdsAudioAlternatePath);
 console.log('birdsEvent: ' + birdsEvent);
 console.log('birdsAlternateEvent: ' + birdsAlternateEvent);
 console.log('birdsStopEvent: ' + birdsStopEvent);
+console.log('birdsPauseEvent:' + birdsPauseEvent);
+console.log('birdsResumeEvent:' + birdsResumeEvent);
+
 
 let defaultData = {
   room: null,
@@ -331,7 +336,12 @@ function eventReceived(event) {
       currentData.audioPath = birdsAudioAlternatePath;
       currentData.playAudio = true;
       break;
+    case birdsResumeEvent:
+      currentData.playAudio = true;
+      playAudioLoop();
+      break;
     case birdsStopEvent:
+    case birdsPauseEvent:
       stopAudio();
       break;
     default:
@@ -356,7 +366,12 @@ function recoverStateFromGame() {
         currentData.playAudio = true;
         playAudioLoop();
         break;
+      case birdsResumeEvent:
+        currentData.playAudio = true;
+        playAudioLoop();
+        break;
       case birdsStopEvent:
+      case birdsPauseEvent:
         stopAudio();
         break;
       default:
