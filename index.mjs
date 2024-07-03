@@ -321,11 +321,11 @@ function gameStateChanged() {
 }
 
 function clueReceived(clue) {
-  log('clueReceived(clue)', clue);
+  console.log('clueReceived(clue)', clue);
 }
 
 function eventReceived(event) {
-  log('eventReceived(event)', event);
+  console.log('eventReceived(event)', event);
   switch (event.event) {
     case birdsEvent:
       currentData.audioPath = birdsAudioPath;
