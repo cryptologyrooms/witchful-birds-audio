@@ -41,23 +41,31 @@ const defaultVolume = process.env.DEFAULT_VOLUME;
 const motorPin = process.env.MOTOR_PIN;
 
 const birdsAudioPath = process.env.BIRDS_AUDIO_URL;
+const birdsAudioTrimmedPath = process.env.BIRDS_AUDIO_TRIMMED_URL;
 const birdsAudioAlternatePath = process.env.BIRDS_AUDIO_ALTERNATE_URL;
+const birdsAudioAlternateTrimmedPath = process.env.BIRDS_AUDIO_ALTERNATE_TRIMMED_URL;
 const birdsEvent = process.env.BIRDS_EVENT;
 const birdsAlternateEvent = process.env.BIRDS_ALTERNATE_EVENT;
 const birdsStopEvent = process.env.BIRDS_STOP_EVENT;
 const birdsPauseEvent = process.env.BIRDS_PAUSE_EVENT;
 const birdsResumeEvent = process.env.BIRDS_RESUME_EVENT;
+const birdsTrimEvent = process.env.BIRDS_TRIM_EVENT
+const birdsAlternateTrimEvent = process.env.BIRDS_EASY_TRIM_EVENT
 
 console.log('Room Slug: ' + roomSlug);
 console.log('Room ScreenName: ' + roomScreenName);
 console.log('Default volume: ' + defaultVolume);
 console.log('birdsAudioPath: ' + birdsAudioPath);
+console.log('birdsAudioTrimmedPath: ' + birdsAudioTrimmedPath);
 console.log('birdsAudioAlternatePath: ' + birdsAudioAlternatePath);
+console.log('birdsAudioAlternateTrimmedPath: ' + birdsAudioAlternateTrimmedPath);
 console.log('birdsEvent: ' + birdsEvent);
 console.log('birdsAlternateEvent: ' + birdsAlternateEvent);
 console.log('birdsStopEvent: ' + birdsStopEvent);
 console.log('birdsPauseEvent:' + birdsPauseEvent);
 console.log('birdsResumeEvent:' + birdsResumeEvent);
+console.log('birdsTrimEvent: ' + birdsTrimEvent);
+console.log('birdsAlternateTrimEvent: ' + birdsAlternateTrimEvent);
 
 
 let defaultData = {
@@ -332,8 +340,17 @@ function eventReceived(event) {
       currentData.playAudio = true;
       playAudioLoop();
       break;
+    case birdsTrimEvent:
+      currentData.audioPath = birdsAudioTrimmedPath;
+      currentData.playAudio = true;
+      playAudioLoop();
+      break;
     case birdsAlternateEvent:
       currentData.audioPath = birdsAudioAlternatePath;
+      currentData.playAudio = true;
+      break;
+    case birdsAlternateTrimEvent:
+      currentData.audioPath = birdsAudioAlternateTrimmedPath;
       currentData.playAudio = true;
       break;
     case birdsResumeEvent:
@@ -361,8 +378,18 @@ function recoverStateFromGame() {
         currentData.playAudio = true;
         playAudioLoop();
         break;
+      case birdsTrimEvent:
+        currentData.audioPath = birdsAudioTrimmedPath;
+        currentData.playAudio = true;
+        playAudioLoop();
+        break;
       case birdsAlternateEvent:
         currentData.audioPath = birdsAudioAlternatePath;
+        currentData.playAudio = true;
+        playAudioLoop();
+        break;
+      case birdsAlternateTrimEvent:
+        currentData.audioPath = birdsAudioAlternateTrimmedPath;
         currentData.playAudio = true;
         playAudioLoop();
         break;
