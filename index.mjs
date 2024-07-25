@@ -343,7 +343,6 @@ function eventReceived(event) {
     case birdsTrimEvent:
       currentData.audioPath = birdsAudioTrimmedPath;
       currentData.playAudio = true;
-      playAudioLoop();
       break;
     case birdsAlternateEvent:
       currentData.audioPath = birdsAudioAlternatePath;
@@ -489,10 +488,10 @@ function playAudioLoop() {
     { mpg123: ['-g', volume] },
     function(err) {
       log('Playing ended: ' + currentData.audioPath);
-      playAudioLoop()
       if (err) {
         log("Play Error:", err);
       } else {
+        playAudioLoop()
       }
     }
   );
