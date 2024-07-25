@@ -83,6 +83,7 @@ let defaultData = {
   clueTimeout: null,
   clueHtml: null,
   audioPath: null,
+  playingPath: null,
   playAudio: false,
 };
 
@@ -482,12 +483,13 @@ function playAudioLoop() {
 
   let volume =  defaultVolume;
   log('Playing (looped) : ' + currentData.audioPath + ' at volume: ' + volume);
+  currentData.playingPath = current.audioPath;
 
   audio = player.play(
-    currentData.audioPath,
+    currentData.playingPath,
     { mpg123: ['-g', volume] },
-    function(err) {
-      log('Playing ended: ' + currentData.audioPath);
+    function (err) {
+      log('Playing ended: ' + currentData.playingPath);
       if (err) {
         log("Play Error:", err);
       } else {
@@ -508,6 +510,7 @@ function playAudio(clue) {
   let audioPath = route('index') + clue.audioPath;
   let volume = clue.options.volume ?? defaultVolume;
   log('Playing : ' + audioPath + ' at volume: ' + volume);
+  currentData.playingPath = current.audioPath;
 
   audio = player.play(
     audioPath,
