@@ -483,7 +483,7 @@ function playAudioLoop() {
 
   let volume =  defaultVolume;
   log('Playing (looped) : ' + currentData.audioPath + ' at volume: ' + volume);
-  currentData.playingPath = current.audioPath;
+  currentData.playingPath = currentData.audioPath;
 
   audio = player.play(
     currentData.playingPath,
@@ -493,6 +493,9 @@ function playAudioLoop() {
       if (err) {
         log("Play Error:", err);
       } else {
+        if (currentData.playAudio == false) {
+          return;
+        }
         playAudioLoop()
       }
     }
@@ -510,7 +513,7 @@ function playAudio(clue) {
   let audioPath = route('index') + clue.audioPath;
   let volume = clue.options.volume ?? defaultVolume;
   log('Playing : ' + audioPath + ' at volume: ' + volume);
-  currentData.playingPath = current.audioPath;
+  currentData.playingPath = currentData.audioPath;
 
   audio = player.play(
     audioPath,
